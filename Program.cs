@@ -1,6 +1,8 @@
 ﻿using CSharp.OOP;
 using CSharp.Types;
 using CSharp.FileIO;
+using CSharp.Socket.TCP;
+using CSharp.Socket.UDP;
 
 public class Program {
 
@@ -12,6 +14,11 @@ public class Program {
         // TypesExamples.ReferenceTypes();
 
         // FileIOExamples.FileReadWrite();
+        
+        // TCPSocketExamples.TCPServer();
+        // TCPSocketExamples.TCPClient();
 
+        // UDPSocketExamples.UDPListener();
+        // UDPSocketExamples.UDPSender();
     }
 }
