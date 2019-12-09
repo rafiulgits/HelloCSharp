@@ -3,6 +3,7 @@ using CSharp.Types;
 using CSharp.FileIO;
 using CSharp.Socket.TCP;
 using CSharp.Socket.UDP;
+using CSharp.Threads;
 
 public class Program {
 
@@ -20,5 +21,7 @@ public class Program {
 
         // UDPSocketExamples.UDPListener();
         // UDPSocketExamples.UDPSender();
+
+        ThreadsExample.MultiThreading();
     }
 }
