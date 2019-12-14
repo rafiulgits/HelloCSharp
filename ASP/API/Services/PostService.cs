@@ -13,7 +13,7 @@ namespace API.Services
         {
             var client = new MongoClient(settings.DatabaseHost);
             var database = client.GetDatabase(settings.DatabaseName);
-            _posts = database.GetCollection<Post>(settings.CollectionName);
+            _posts = database.GetCollection<Post>("post");
         }
 
         public List<Post> Get() =>

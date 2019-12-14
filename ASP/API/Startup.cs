@@ -29,21 +29,21 @@ namespace API
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            // configure user collection in database connection service
-            services.Configure<UserDatabaseSettings>(Configuration.GetSection(nameof(UserDatabaseSettings)));
-            // configure post collection in database
-            services.Configure<PostDatabaseSettings>(Configuration.GetSection(nameof(PostDatabaseSettings)));
 
-            // singleton database connection and service for user model
-            services.AddSingleton<DatabaseSettings>(settings => 
-                settings.GetRequiredService<IOptions<UserDatabaseSettings>>().Value);
+            // configure database connection :: inject
+            services.Configure<DatabaseSettings>(options => {
+                options.DatabaseHost = Configuration.GetSection("MongoDBSettings:DBHost").Value;
+                options.DatabaseName = Configuration.GetSection("MongoDBSettings:DBName").Value;
+            });
+
+            // database connection singleton setup
+            services.AddSingleton<DatabaseSettings>(options => 
+                options.GetRequiredService<IOptions<DatabaseSettings>>().Value);
+
+            // make model repository one time intiailization :: singleton
             services.AddSingleton<UserService>();
-
-            // database connection and service for post model
-            // services.AddSingleton<DatabaseSettings>(settings => 
-            //     settings.GetRequiredService<IOptions<PostDatabaseSettings>>().Value);
-            // services.AddSingleton<PostService>();
-
+            services.AddSingleton<PostService>();
+            
             services.AddControllers();
         }
 
