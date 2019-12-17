@@ -1,4 +1,5 @@
 using API.Installers;
+using API.Options;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -37,10 +38,13 @@ namespace API
 
             app.UseHttpsRedirection();
 
+            // Swagger middleware
+            var swaggerOptions = new SwaggerOptions();
+            Configuration.GetSection("SwaggerOptions").Bind(swaggerOptions);
+            app.UseSwagger(op => {op.RouteTemplate = swaggerOptions.JsonRoute; });
+            app.UseSwaggerUI(op => {op.SwaggerEndpoint(swaggerOptions.UIEndpoint, swaggerOptions.Description);});
+
             app.UseRouting();
-
-            app.UseAuthorization();
-
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();

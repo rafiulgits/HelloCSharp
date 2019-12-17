@@ -11,10 +11,8 @@ namespace API.Installers
         public void InstallServices(IServiceCollection services, IConfiguration configuration)
         {
             // map database settings from appsettings to model service
-            services.Configure<DatabaseSettings>(options => {
-                options.DatabaseHost = configuration.GetSection("MongoDBSettings:DBHost").Value;
-                options.DatabaseName = configuration.GetSection("MongoDBSettings:DBName").Value;
-            });
+            services.Configure<DatabaseSettings>(options => 
+                configuration.GetSection("MongoDBSettings").Bind(options));
 
             // make database connection service singleton
             services.AddSingleton<DatabaseSettings>(options => 
