@@ -59,6 +59,9 @@ namespace API.Installers
                     ValidateLifetime = true
                 };
             });
+
+            // map JwtSettings to AppSettingsProvider
+            AppSettingsProvider.jwtSettings = jwtSettings;
         }
     }
 }
