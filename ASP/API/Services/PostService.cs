@@ -23,5 +23,10 @@ namespace API.Services
         public Post Get(string id) => 
            _posts.Find(post => post.Id == id).FirstOrDefault();
 
+
+        public Post Create(Post post) {
+            _posts.InsertOne(post);
+            return post;
+        }
     }
 }
