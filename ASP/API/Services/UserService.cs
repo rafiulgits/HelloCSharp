@@ -23,13 +23,12 @@ namespace API.Services
             _users.Find<User>(user => user.Id == id).FirstOrDefault();
 
 
-        public User Authenticate(string email, string rawPassword) =>
-            _users.Find<User>(user => (user.Email == email && user.Password == rawPassword)).FirstOrDefault();
-
-
         public User Create(User user) {
             _users.InsertOne(user);
             return user;
         }
+
+        public User GetUserByEmail(string email) =>
+            _users.Find<User>(user => user.Email == email).FirstOrDefault();
     }
 }

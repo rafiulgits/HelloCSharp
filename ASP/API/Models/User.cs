@@ -3,7 +3,8 @@ using MongoDB.Bson.Serialization.Attributes;
 
 namespace API.Models
 {
-    public class User {
+    public class User 
+    {
         [BsonId]
         [BsonRepresentation(BsonType.ObjectId)]
         public string Id {set; get;}
@@ -16,5 +17,10 @@ namespace API.Models
 
         [BsonElement("password")]
         public string Password {set; get;}
+
+        public User()
+        {
+            Id = ObjectId.GenerateNewId().ToString();
+        }
     }
 }

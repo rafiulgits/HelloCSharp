@@ -38,10 +38,10 @@ namespace API.Models.Extension
             return user;
         }
 
-        public static string GetToken(this User user, String secret)
+        public static string GetToken(this User user)
         {
             var tokenHandler = JwtToken.GetHandler();
-            var key = Encoding.ASCII.GetBytes(secret);
+            var key = Encoding.ASCII.GetBytes(AppSettingsProvider.jwtSettings.Secret);
             var tokenDescriptor = new SecurityTokenDescriptor
             {
                 Subject = new ClaimsIdentity(new Claim[] 
@@ -54,6 +54,28 @@ namespace API.Models.Extension
             };
             var token = tokenHandler.CreateToken(tokenDescriptor);
             return tokenHandler.WriteToken(token);
+        }
+
+        private static string GetEncryptedValue(string password)
+        {
+            string hashValue = System.Convert.ToBase64String(Microsoft.AspNetCore.Cryptography.KeyDerivation.KeyDerivation.Pbkdf2(
+                password : password,
+                salt : System.Text.Encoding.UTF8.GetBytes(AppSettingsProvider.jwtSettings.Secret),
+                prf : Microsoft.AspNetCore.Cryptography.KeyDerivation.KeyDerivationPrf.HMACSHA256,
+                iterationCount : 1000,
+                numBytesRequested: 256/8
+            ));
+            return hashValue;
+        }
+
+        public static void SetPassword(this User user, string rawPassword)
+        {
+            user.Password = GetEncryptedValue(rawPassword);
+        }
+
+        public static bool CheckPassword(this User user, string rawPassword)
+        {
+            return user.Password == GetEncryptedValue(rawPassword);
         }
     }    
 }

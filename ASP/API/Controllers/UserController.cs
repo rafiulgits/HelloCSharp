@@ -1,6 +1,5 @@
 using API.Models;
 using API.Models.Extension;
-using API.Options;
 using API.Route.Requests;
 using API.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -16,24 +15,26 @@ namespace API.Controller
     public class UserController : ControllerBase 
     {
         private readonly UserService _userService;
-        private readonly JwtSettings _jwtSettings;
 
-        public UserController(UserService userService, JwtSettings jwtSettings)
+        public UserController(UserService userService)
         {
             _userService = userService;
-            _jwtSettings = jwtSettings;
         }
 
         [AllowAnonymous]
         [HttpPost("login")]
         public ActionResult<string> Login([FromBody] AuthRequest.Login formData)
         {
-            var user = _userService.Authenticate(formData.Email, formData.Password);
+            var user = _userService.GetUserByEmail(formData.Email);
             if(user == null)
             {
-                return BadRequest("authentication credentials failed");
+                return BadRequest("no user found with this email");
             }
-            return user.GetToken(_jwtSettings.Secret);
+            if(user.CheckPassword(formData.Password) == false)
+            {
+                return BadRequest("incorrect password");
+            }
+            return user.GetToken();
         }
 
         [HttpGet("all")]
@@ -41,17 +42,32 @@ namespace API.Controller
             _userService.Get();
 
 
-        [HttpPost("create", Name="CreateUser")]
-        public IActionResult Create([FromBody]User user)
+        [HttpGet("profile")]
+        public ActionResult<User> Profile()
         {
-            if(string.IsNullOrEmpty(user.Id)){
-                var id = System.Guid.NewGuid().ToString();
-                user.Id = id.Replace("-", "").Substring(0, 24);
+            var user =  _userService.Get(HttpContext.User.Identity.Name);
+            if(user == null)
+            {
+                return null;
             }
-            var newUser = _userService.Create(user);
-            var baseUrl = $"{HttpContext.Request.Scheme}://{HttpContext.Request.Host.ToUriComponent()}";
-            var locationUri = $"{baseUrl}/api/user/{user.Id}";
-            return Created(locationUri, newUser);
+            return user.WithoutPassword();
+        }
+
+        [AllowAnonymous]
+        [HttpPost("register", Name="CreateUser")]
+        public ActionResult<string> Create([FromBody]AuthRequest.Register formData)
+        {
+            var existingUser = _userService.GetUserByEmail(formData.Email);
+            if(existingUser != null)
+            {
+                return BadRequest("user with this email already registered");
+            }
+            var newUser = new User();
+            newUser.Email = formData.Email;
+            newUser.UserName = formData.UserName;
+            newUser.SetPassword(formData.Password);
+            newUser = _userService.Create(newUser);
+            return newUser.GetToken();
         }
     }
 }
