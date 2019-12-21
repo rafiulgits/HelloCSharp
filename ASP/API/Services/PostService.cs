@@ -9,10 +9,8 @@ namespace API.Services
     {
         private readonly IMongoCollection<Post> _posts;
 
-        public PostService(DatabaseSettings settings)
+        public PostService(IMongoDatabase database)
         {
-            var client = new MongoClient(settings.DatabaseHost);
-            var database = client.GetDatabase(settings.DatabaseName);
             _posts = database.GetCollection<Post>("post");
         }
 
@@ -24,9 +22,21 @@ namespace API.Services
            _posts.Find(post => post.Id == id).FirstOrDefault();
 
 
-        public Post Create(Post post) {
+        public Post Create(Post post) 
+        {
             _posts.InsertOne(post);
             return post;
+        }
+
+        public Comment AddComment(string postId, Comment comment)
+        {
+            Post post = _posts.Find(item => item.Id == postId).FirstOrDefault();
+            if(post == null)
+            {
+                return null;
+            }
+            post.Comments.Append(comment);
+            return comment;
         }
     }
 }

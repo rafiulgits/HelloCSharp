@@ -1,5 +1,6 @@
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
+using System;
 
 namespace API.Models 
 {
@@ -8,27 +9,35 @@ namespace API.Models
 
         [BsonId]
         [BsonRepresentation(BsonType.ObjectId)]
-        public string Id {set; get;}
+        public string Id {set; get;} = ObjectId.GenerateNewId().ToString();
 
         [BsonElement("title")]
+        [BsonRequired]
         public string Title {set; get;}
 
         [BsonElement("body")]
+        [BsonRequired]
         public string Body {set; get;}
 
-        [BsonElement("time")]
-        public string Time {set; get;}
-
-        [BsonElement("date")]
-        public string Date {set; get;}
+        [BsonElement("createdOn")]
+        [BsonDateTimeOptions(Kind=DateTimeKind.Local)]
+        [BsonRepresentation(BsonType.DateTime)]
+        public DateTime CreatedOn {set; get;} = DateTime.Now;
 
         [BsonElement("clap")]
-        public long Clap {set; get;}
+        public long Clap {set; get;} = 0;
 
-        [BsonElement("user")]
+        [BsonElement("owner")]
+        [BsonRequired]
         public User Owner {set; get;}
 
         [BsonElement("comments")]
-        public string[] Comments {set; get;}
+        public Comment[] Comments {set; get;} = {};
+
+        public Post(string title, string body, User user){
+            Title = title;
+            Body = body;
+            Owner = user;
+        }
     }
 }

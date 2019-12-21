@@ -22,9 +22,8 @@ namespace API.Installers
             configuration.Bind("MongoDBSettings", databaseSettings);
             services.AddSingleton(databaseSettings);
 
-            // model repository as singleton service
-            services.AddSingleton<UserService>();
-            services.AddSingleton<PostService>();
+            // generic database service
+            services.AddSingleton<DatabaseService>();
         }
     }
 }

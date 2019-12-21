@@ -1,5 +1,6 @@
 using API.Models;
 using API.Models.Extension;
+using API.Options;
 using API.Route.Requests;
 using API.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -14,18 +15,18 @@ namespace API.Controller
     [ApiController]
     public class UserController : ControllerBase 
     {
-        private readonly UserService _userService;
+        private readonly DatabaseService DB;
 
-        public UserController(UserService userService)
+        public UserController(DatabaseService databaseService)
         {
-            _userService = userService;
+           DB = databaseService;
         }
 
         [AllowAnonymous]
         [HttpPost("login")]
         public ActionResult<string> Login([FromBody] AuthRequest.Login formData)
         {
-            var user = _userService.GetUserByEmail(formData.Email);
+            var user = DB.User.GetUserByEmail(formData.Email);
             if(user == null)
             {
                 return BadRequest("no user found with this email");
@@ -38,14 +39,13 @@ namespace API.Controller
         }
 
         [HttpGet("all")]
-        public ActionResult<List<User>> Get() =>
-            _userService.Get();
+        public ActionResult<List<User>> Get() => DB.User.Get();
 
 
         [HttpGet("profile")]
         public ActionResult<User> Profile()
         {
-            var user =  _userService.Get(HttpContext.User.Identity.Name);
+            var user =  DB.User.Get(HttpContext.User.Identity.Name);
             if(user == null)
             {
                 return null;
@@ -57,16 +57,16 @@ namespace API.Controller
         [HttpPost("register", Name="CreateUser")]
         public ActionResult<string> Create([FromBody]AuthRequest.Register formData)
         {
-            var existingUser = _userService.GetUserByEmail(formData.Email);
+            var existingUser = DB.User.GetUserByEmail(formData.Email);
             if(existingUser != null)
             {
                 return BadRequest("user with this email already registered");
             }
             var newUser = new User();
             newUser.Email = formData.Email;
-            newUser.UserName = formData.UserName;
+            newUser.Name = formData.Name;
             newUser.SetPassword(formData.Password);
-            newUser = _userService.Create(newUser);
+            newUser = DB.User.Create(newUser);
             return newUser.GetToken();
         }
     }

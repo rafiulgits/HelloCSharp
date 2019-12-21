@@ -9,10 +9,8 @@ namespace API.Services
     {
         private readonly IMongoCollection<User> _users;
 
-        public UserService(DatabaseSettings settings)
+        public UserService(IMongoDatabase database)
         {
-            var client = new MongoClient(settings.DatabaseHost);
-            var database = client.GetDatabase(settings.DatabaseName);
             _users = database.GetCollection<User>("user");
         }
 

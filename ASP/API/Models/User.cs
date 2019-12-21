@@ -1,26 +1,25 @@
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
 
+
 namespace API.Models
 {
     public class User 
     {
         [BsonId]
         [BsonRepresentation(BsonType.ObjectId)]
-        public string Id {set; get;}
+        public string Id {set; get;} = ObjectId.GenerateNewId().ToString();
 
         [BsonElement("name")]
-        public string UserName {set; get;}
+        [BsonRequired]
+        public string Name {set; get;}
 
         [BsonElement("email")]
+        [BsonRequired]
         public string Email {set; get;}
 
         [BsonElement("password")]
+        [BsonRequired]
         public string Password {set; get;}
-
-        public User()
-        {
-            Id = ObjectId.GenerateNewId().ToString();
-        }
     }
 }
