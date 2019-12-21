@@ -3,13 +3,13 @@ using MongoDB.Driver;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace API.Services
+namespace API.Models.Repository
 {
-    public class PostService
+    public class PostRepository
     {
         private readonly IMongoCollection<Post> _posts;
 
-        public PostService(IMongoDatabase database)
+        public PostRepository(IMongoDatabase database)
         {
             _posts = database.GetCollection<Post>("post");
         }

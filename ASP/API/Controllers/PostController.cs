@@ -1,5 +1,4 @@
 using API.Models;
-using API.Options;
 using API.Route.Requests;
 using API.Services;
 using Microsoft.AspNetCore.Mvc;

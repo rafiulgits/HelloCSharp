@@ -1,15 +1,14 @@
-using API.Models;
 using MongoDB.Driver;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace API.Services
+namespace API.Models.Repository
 {
-    public class UserService
+    public class UserRepository
     {
         private readonly IMongoCollection<User> _users;
 
-        public UserService(IMongoDatabase database)
+        public UserRepository(IMongoDatabase database)
         {
             _users = database.GetCollection<User>("user");
         }
