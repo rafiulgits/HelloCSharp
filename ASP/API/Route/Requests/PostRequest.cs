@@ -2,7 +2,7 @@ namespace API.Route.Requests
 {
     public class PostRequest
     {
-        public class Create
+        public class Create : IFormRequest
         {
             public string Title {set; get;}
             public string Body {set; get;}
@@ -17,25 +17,48 @@ namespace API.Route.Requests
             }
         }
 
-        public class Update
+        public class Update : IFormRequest
         {
-            public string PostId {set; get;}
             public string Title {set; get;}
             public string Body {set; get;}
-            
+
+            public bool IsValid()
+            {
+                if( string.IsNullOrEmpty(Title) ||
+                    string.IsNullOrEmpty(Body))
+                {
+                    return false;
+                }
+                return true;
+            }
         }
 
-        public class AddComment
+        public class AddComment : IFormRequest
         {
-            public string PostId {set; get;}
             public string Body {set; get;}
+
+            public bool IsValid()
+            {
+                if(string.IsNullOrEmpty(Body))
+                {
+                    return false;
+                }
+                return true;
+            }
         }
 
-        public class UpdateComment
+        public class UpdateComment : IFormRequest
         {
-            public string PostId {set; get;}
-            public string CommentId {set; get;}
             public string Body {set; get;}
+
+            public bool IsValid()
+            {
+                if(string.IsNullOrEmpty(Body))
+                {
+                    return false;
+                }
+                return true;
+            }
         }
     }
 }

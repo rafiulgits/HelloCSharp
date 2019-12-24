@@ -28,14 +28,29 @@ namespace API.Models.Repository
             return post;
         }
 
-        public Comment AddComment(string postId, Comment comment)
+        public Post Update(string postId, string Title, string Body)
         {
-            Post post = _posts.Find(item => item.Id == postId).FirstOrDefault();
-            if(post == null)
+            var filter = Builders<Post>.Filter.Eq(item => item.Id , postId);
+            var operation = Builders<Post>.Update
+                .Set(item => item.Title , Title)
+                .Set(item => item.Body, Body);
+            var result = _posts.UpdateOne(filter, operation);
+            if(!result.IsAcknowledged)
             {
                 return null;
             }
-            post.Comments.Append(comment);
+            return Get(postId);
+        }
+
+        public Comment AddComment(string postId, Comment comment)
+        {
+            var filter = Builders<Post>.Filter.Eq(item => item.Id, postId);
+            var operation = Builders<Post>.Update.Push(item => item.Comments, comment);
+            var result = _posts.FindOneAndUpdate(filter, operation);
+            if(result == null)
+            {
+                return null;
+            }
             return comment;
         }
     }

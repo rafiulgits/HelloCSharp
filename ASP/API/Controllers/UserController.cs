@@ -1,6 +1,6 @@
 using API.Models;
 using API.Models.Extension;
-using API.Options;
+using API.Route.Response;
 using API.Route.Requests;
 using API.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -39,18 +39,24 @@ namespace API.Controller
         }
 
         [HttpGet("all")]
-        public ActionResult<List<User>> Get() => DB.User.Get();
+        public ActionResult<List<UserResponse.Profile>> Get()
+        {
+            var users = DB.User.Get();
+            List<UserResponse.Profile> responseList = new List<UserResponse.Profile>();
+            users.ForEach(user => responseList.Add(new UserResponse.Profile(user)));
+            return responseList;
+        }
 
 
         [HttpGet("profile")]
-        public ActionResult<User> Profile()
+        public ActionResult<UserResponse.Profile> Profile()
         {
             var user =  DB.User.Get(HttpContext.User.Identity.Name);
             if(user == null)
             {
-                return null;
+                return NotFound("user not found");
             }
-            return user.WithoutPassword();
+            return new UserResponse.Profile(user);
         }
 
         [AllowAnonymous]
