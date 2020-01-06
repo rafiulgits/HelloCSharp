@@ -4,6 +4,7 @@ using CSharp.FileIO;
 using CSharp.Socket.TCP;
 using CSharp.Socket.UDP;
 using CSharp.Threads;
+using CSharp.Http;
 
 public class Program {
 
@@ -23,5 +24,8 @@ public class Program {
         // UDPSocketExamples.UDPSender();
 
         // ThreadsExample.MultiThreading();
+
+        // HttpSample.Server();
+        // HttpSample.LongPollClient();
     }
 }
