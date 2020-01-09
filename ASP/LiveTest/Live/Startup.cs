@@ -10,6 +10,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Live.Hubs;
+using Live.Dispatchers;
 
 namespace Live
 {
@@ -26,6 +28,12 @@ namespace Live
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllers();
+
+            // Add SignalR service
+            services.AddSignalR();
+
+            // inject
+            services.AddTransient<IHubDispatcher, ChatHubDispatcher>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -34,6 +42,10 @@ namespace Live
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
+            }
+            else
+            {
+                app.UseHsts();
             }
 
             app.UseHttpsRedirection();
@@ -45,6 +57,9 @@ namespace Live
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
+                
+                // Mapping SignalR Hub endpoints
+                endpoints.MapHub<ChatHub>("/chathub");
             });
         }
     }
